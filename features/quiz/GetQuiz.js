@@ -23,8 +23,6 @@ const GetQuiz = ({ route, navigation }) => {
     const [answerList, setAnswers] = useState([]);
     const [answerKey, updateKey] = useState([]);
     const [startTime, setStartTime] = useState(null);
-    const [endTime, setEndTime] = useState(null);
-    const [elapsedTime, setElapsedTime] = useState(null);
 
     const handleOptionPress = (index) => {
         {
@@ -73,8 +71,7 @@ const GetQuiz = ({ route, navigation }) => {
             });
             setAnswers(data);
             updateKey(updatedKey);
-            console.log(answerKey);
-            console.log(answerList);
+            return { answerKey: updatedKey, answerList: data };
         } catch (e) {
             console.error('Error: ', e);
         }
@@ -136,8 +133,6 @@ const GetQuiz = ({ route, navigation }) => {
 
         return () => {
             setStartTime(null);
-            setEndTime(null);
-            setElapsedTime(null);
         };
     }, []);
 
@@ -170,8 +165,8 @@ const GetQuiz = ({ route, navigation }) => {
                                     <RenderOptions options={props.questionList[props.id - 1].options} />
                                 </View>
                                 {props.id !== 5 ? (
-                                    <Pressable onPress={() => {
-                                        postSelectedAnswer(props.id, props.questionList[props.id - 1].options[selectedOption]);
+                                    <Pressable onPress={async () => {
+                                        await postSelectedAnswer(props.id, props.questionList[props.id - 1].options[selectedOption]);
                                         navigation.dispatch(
                                             StackActions.push("Quiz", { id: props.id + 1, questionList: props.questionList })
                                         );
@@ -182,10 +177,12 @@ const GetQuiz = ({ route, navigation }) => {
                                         </View>
                                     </Pressable>
                                 ) : (
-                                    <Pressable onPress={() => {
-                                        postSelectedAnswer(props.id, props.questionList[props.id - 1].options[selectedOption]);
-                                        getAnswers();
-                                    }}>
+                                    <Pressable onPress={async () => {
+                                        await postSelectedAnswer(props.id, props.questionList[props.id - 1].options[selectedOption]);
+                                        const { answerKey, answerList } = await getAnswers();
+                                        console.log(answerKey);
+                                        console.log(answerList);
+                                      }}>
                                         <View style={styles.customButton}>
                                             <Text style={styles.buttonText}> Submit </Text>
                                             <MaterialIcons name="arrow-forward" size={24} color="#FFF" style={styles.buttonIcon} />
