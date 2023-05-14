@@ -75,7 +75,7 @@ const GetScore = ({ route, navigation }) => {
                             method: "DELETE",
                           });
                         navigation.dispatch(
-                            StackActions.popToTop()
+                            StackActions.replace("Home")
                         );
                     }}>
                     <View style={styles.customButton}>

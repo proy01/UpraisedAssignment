@@ -164,7 +164,7 @@ const GetQuiz = ({ route, navigation }) => {
                 </View>
                 {props.questionList.length > 0 ? (
                     <View style={styles.question}>
-                        <NumberCircle current={props.id} total={5} />
+                        <NumberCircle current={props.id} total={props.questionList.length} />
                         <View style={styles.mainQuestion}>
                             <Text style={styles.mainQuestionText}>
                                 {props.questionList[props.id - 1].question}
@@ -178,6 +178,39 @@ const GetQuiz = ({ route, navigation }) => {
                                         style={styles.image}
                                     />
                                 </View>
+                                <View style={{ alignSelf: 'center', paddingVertical: 16 }}>
+                                    <RenderOptions options={props.questionList[props.id - 1].options} />
+                                </View>
+                                {props.id !== 5 ? (
+                                    <Pressable onPress={async () => {
+                                        await postSelectedAnswer(props.id, props.questionList[props.id - 1].options[selectedOption]);
+                                        navigation.dispatch(
+                                            StackActions.replace("Quiz", { id: props.id + 1, questionList: props.questionList })
+                                        );
+                                    }}>
+                                        <View style={styles.customButton}>
+                                            <Text style={styles.buttonText}> Next </Text>
+                                            <MaterialIcons name="arrow-forward" size={24} color="#FFF" style={styles.buttonIcon} />
+                                        </View>
+                                    </Pressable>
+                                ) : (
+                                    <Pressable onPress={async () => {
+                                        await postSelectedAnswer(props.id, props.questionList[props.id - 1].options[selectedOption]);
+                                        let { answerKey, answerList } = await getAnswers();
+                                        let {correct, wrong } = await calculateScore(answerKey, answerList);
+                                        navigation.dispatch(
+                                            StackActions.push("Score", { correct: correct, wrong: wrong})
+                                        );
+                                      }}>
+                                        <View style={styles.customButton}>
+                                            <Text style={styles.buttonText}> Submit </Text>
+                                            <MaterialIcons name="arrow-forward" size={24} color="#FFF" style={styles.buttonIcon} />
+                                        </View>
+                                    </Pressable>
+                                )}
+                            </View>
+                        ) : (
+                            <View style={styles.question}>
                                 <View style={{ alignSelf: 'center', paddingVertical: 16 }}>
                                     <RenderOptions options={props.questionList[props.id - 1].options} />
                                 </View>
@@ -208,9 +241,6 @@ const GetQuiz = ({ route, navigation }) => {
                                         </View>
                                     </Pressable>
                                 )}
-                            </View>
-                        ) : (
-                            <View>
                             </View>
                         )}
                     </View>

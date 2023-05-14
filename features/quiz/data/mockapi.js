@@ -17,9 +17,9 @@ export const MockServer = () => createServer({
                     question:
                         "Which artist released the hit single 'Shape of You'?",
                     options: [
-                        'Ed Sheeran',
                         'Justin Bieber',
-                        'Bruno Mars',
+                        'Bruno Mars', 
+                        'Ed Sheeran',
                         'Taylor Swift',
                         'Adele',
                         'Shawn Mendes',
@@ -33,12 +33,12 @@ export const MockServer = () => createServer({
                     id: 2,
                     question: "Which band is known for the song 'Hey Jude'?",
                     options: [
-                        'The Beatles',
                         'Coldplay',
                         'Queen',
                         'Led Zeppelin',
                         'U2',
                         'Nirvana',
+                        'The Beatles',
                         'AC/DC',
                     ],
                     answer: 'The Beatles',
@@ -50,8 +50,8 @@ export const MockServer = () => createServer({
                     id: 3,
                     question: "Who won the 'Album of the Year' at the 2021 Grammy Awards?",
                     options: [
-                        'Taylor Swift',
                         'Dua Lipa',
+                        'Taylor Swift',
                         'Beyoncé',
                         'Post Malone',
                         'Billie Eilish',
@@ -84,16 +84,16 @@ export const MockServer = () => createServer({
                     id: 5,
                     question: 'Who performed the Super Bowl halftime show in 2020?',
                     options: [
-                        'Jennifer Lopez and Shakira',
                         'Justin Timberlake',
                         'Coldplay',
                         'Beyoncé',
                         'Lady Gaga',
+                        'Jennifer Lopez and Shakira',
                         'Katy Perry',
                         'Bruno Mars',
                     ],
                     answer: 'Jennifer Lopez and Shakira',
-                    showImage: true,
+                    showImage: false,
                     imageLink:
                         'https://images2.imgbox.com/45/7c/9BNK04YZ_o.jpeg',
                 },
@@ -104,14 +104,14 @@ export const MockServer = () => createServer({
             const answer = schema.answers.create(attrs);
             return answer;
         })
-        this.get("/api/answers", (schema)=>{
+        this.get("/api/answers", (schema) => {
             const answers = schema.db.answers;
             return answers;
         })
         this.delete("/api/answers", (schema) => {
             schema.db.answers.remove(); // Remove all answers from the database
             return { message: "Answers cleared successfully" };
-          });
+        });
     },
-    
+
 });

@@ -68,7 +68,7 @@ const Start = (props) => {
         props.questionList.length > 1 ? (
             <Pressable onPress={() => {
                 props.navigation.dispatch(
-                    StackActions.push("Quiz", { id: 1, questionList: props.questionList })
+                    StackActions.replace("Quiz", { id: 1, questionList: props.questionList })
                 );
             }}>
                 <View style={styles.customButton}>
