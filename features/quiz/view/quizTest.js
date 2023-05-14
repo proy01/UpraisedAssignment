@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
 import Lottie from 'lottie-react-native';
 import * as Progress from 'react-native-progress';
+import { MaterialIcons } from '@expo/vector-icons';
 
 // import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
 
@@ -32,7 +33,7 @@ const sampleData = {
     ],
     "answer": "Ed Sheeran",
     "showImage": true,
-    "imageLink": "https://drive.google.com/file/d/12u0Q06DmCQVETsUPwfGk8eo1AqbR5ULi/preview"
+    "imageLink": "https://thumbs2.imgbox.com/8a/cd/2X3yoZW4_t.jpeg"
   },
   "2": {
     "id": 2,
@@ -105,6 +106,64 @@ const YourComponent = () => {
 
   const [questionList, setQuestionList] = useState([]);
 
+  const [selectedOption, setSelectedOption] = useState(null);
+
+  const handleOptionPress = (index) => {
+    { selectedOption !== index ? (setSelectedOption(index)) : (setSelectedOption(null)) };
+  };
+
+  const NumberCircle = (props) => {
+    return (
+      <View style={styles.circle}>
+        <Progress.Circle
+          size={120}
+          progress={props.current / props.total}
+          thickness={8}
+          color="#44B77B"
+          unfilledColor="#F3F4FA"
+          borderWidth={0}
+          showsText
+          strokeCap='round'
+          formatText={() => (
+            <View style={{ flexDirection: 'row' }}>
+              <Text style={styles.currentPage}>{`${props.current}`}</Text>
+              <Text style={styles.totalQuestion}>/{props.total}</Text>
+            </View>
+          )} />
+      </View>
+    );
+  };
+
+
+  const RenderOptions = (props) => {
+    return props.options.map((option, index) => (
+      <TouchableOpacity
+        key={index}
+        style={[
+          styles.optionButton,
+          selectedOption === index && styles.selectedOptionButton,
+        ]}
+        onPress={() => handleOptionPress(index)}
+      >
+        {selectedOption === index ? (
+          <View style={styles.selectedOption}>
+            <MaterialIcons name="check" size={24} color="#FFF" />
+          </View>
+        ) : (
+          <View style={styles.emptyOption} />
+        )}
+        <Text
+          style={[
+            styles.optionText,
+            selectedOption === index && styles.selectedOptionText,
+          ]}
+        >
+          {option}
+        </Text>
+      </TouchableOpacity>
+    ));
+  };
+
   const getQuestions = () => {
     try {
       const data = sampleData;
@@ -127,52 +186,39 @@ const YourComponent = () => {
 
   return (
     <View style={styles.background}>
-      <View>
-        <Image source={require('../../../assets/images/confetti.png')} style={styles.confetti} />
-      </View>
-      {questionList.length > 0 ? (
-        <View style={styles.question}>
-          <NumberCircle current={1} total={5} />
-          <View style={styles.mainQuestion}>
-            <Text style={styles.mainQuestionText}>{questionList[0].question}</Text>
-          </View>
-          {questionList[0].showImage ? (
-            <View>
-              <Image source={{ uri: "https://images2.imgbox.com/8a/cd/2X3yoZW4_o.jpeg" }} style={styles.image} />
-            </View>
-          ) : (
-            <Lottie source={require('../../../assets/animations/loading.json')} autoPlay loop />
-          )}
+      <ScrollView>
+
+        <View>
+          <Image source={require('../../../assets/images/confetti.png')} style={styles.confetti} />
         </View>
-      ) : (
-        <Lottie source={require('../../../assets/animations/loading.json')} autoPlay loop />
-      )}
-
-    </View>
-  );
-};
-
-const NumberCircle = (props) => {
-  return (
-    <View style={styles.circle}>
-      <Progress.Circle
-        size={120}
-        progress={props.current / props.total}
-        thickness={8}
-        color="#44B77B"
-        unfilledColor="#F3F4FA"
-        borderWidth={0}
-        showsText
-        strokeCap='round'
-        formatText={() => (
-          <View style={{ flexDirection: 'row' }}>
-            <Text style={styles.currentPage}>{`${props.current}`}</Text>
-            <Text style={styles.totalQuestion}>/{props.total}</Text>
+        {questionList.length > 0 ? (
+          <View style={styles.question}>
+            <NumberCircle current={1} total={5} />
+            <View style={styles.mainQuestion}>
+              <Text style={styles.mainQuestionText}>{questionList[0].question}</Text>
+            </View>
+            {questionList[0].showImage ? (
+              <View>
+                <View style={{ paddingVertical: 16 }}>
+                  <Image source={{ uri: questionList[0].imageLink }} style={styles.image} />
+                </View>
+                <View style={{ alignSelf: 'center', paddingVertical: 16 }}>
+                  <RenderOptions options={questionList[0].options} />
+                </View>
+              </View>
+            ) : (
+              <Lottie source={require('../../../assets/animations/loading.json')} autoPlay loop />
+            )}
           </View>
-        )} />
+        ) : (
+          <Lottie source={require('../../../assets/animations/loading.json')} autoPlay loop />
+        )}
+      </ScrollView>
+
     </View>
   );
 };
+
 
 const styles = StyleSheet.create({
   background: {
@@ -224,10 +270,47 @@ const styles = StyleSheet.create({
   },
   image: {
     alignSelf: 'center',
-    width: "70%", 
-    height: 200, 
+    width: "70%",
+    height: 200,
     resizeMode: 'contain',
-  }
+  },
+  optionButton: {
+    flexDirection: 'row',
+    width: Dimensions.get('window').width * 0.8,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    marginVertical: 5,
+    backgroundColor: '#F1F1F1',
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  selectedOptionButton: {
+    borderColor: '#4CAF50',
+    borderWidth: 2,
+  },
+  selectedOption: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    backgroundColor: '#4CAF50',
+    marginRight: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  emptyOption: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#000',
+    marginRight: 10,
+  },
+  optionText: {
+    fontSize: 16,
+  },
+  selectedOptionText: {
+    fontWeight: 'bold',
+  },
 });
 
 export default YourComponent;

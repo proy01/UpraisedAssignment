@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import HomePage from './features/home/view/HomePage';
 import YourComponent from './features/quiz/view/quizTest';
+import Form from './features/quiz/view/formTest';
 
 export default function App() {
   return (
