@@ -1,30 +1,38 @@
+import 'react-native-gesture-handler';
 import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, StackActions } from '@react-navigation/native';
+import React, { useState, useEffect } from 'react';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import HomePage from './features/home/view/HomePage';
-import RenderQuestion from './features/quiz/view/renderQuestion';
+import GetQuiz from './features/quiz/GetQuiz';
 
 export default function App() {
+  const Stack = createNativeStackNavigator();
+  
+  const [currentPage, setPage] = useState(1);
+
+  
+  const handleSetPage = (id) => {
+    setPage(id);
+  };
+
   return (
     <NavigationContainer>
       <SafeAreaView style={styles.container}>
-        <RenderQuestion id={1} />
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component={HomePage} options={{ headerShown: false }}/>
+          <Stack.Screen name="Quiz" component={GetQuiz} options={{ headerShown: false }}/>
+        </Stack.Navigator>
       </SafeAreaView>
     </NavigationContainer>
   );
 }
 
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 50,
-    // backgroundColor: '#000',
   },
-  // background: {
-  //   flex: 1,
-  //   width: '100%',
-  //   // alignItems: 'center',
-  //   // justifyContent: 'center',
-  //   // height: 200,
-  // }
 });

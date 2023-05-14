@@ -13,15 +13,7 @@ import { NumberCircle } from './numberCircle';
 import { RenderOptions } from './renderOptions';
 
 
-const QuizPage = (props) => {
-    // All the props that this requires:
-    // 1. questionList.length (qlen)
-    // 2. id
-    // 3. question
-    // 4. showImage
-    // 5. imageLink
-    // 6. options
-    // 7. onPress
+const QuizPage = () => {
 
     return (
         <View style={styles.background}>
