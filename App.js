@@ -2,6 +2,7 @@ import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 
 import HomePage from './features/home/view/HomePage';
+import YourComponent from './features/quiz/view/quizTest';
 
 export default function App() {
   return (
@@ -11,7 +12,8 @@ export default function App() {
           <Text>Open up App.js to start working on your app!</Text>
           <StatusBar style="auto" />
         </LinearGradient> */}
-        <HomePage />
+        {/* <HomePage /> */}
+        <YourComponent />
       </SafeAreaView>
     </NavigationContainer>
   );
