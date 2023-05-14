@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -11,8 +11,6 @@ import {
 } from 'react-native';
 import Lottie from 'lottie-react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { Question } from './model/question_model';
-import { sampleData } from './sampleData'
 import * as Progress from 'react-native-progress';
 import { StackActions } from '@react-navigation/native';
 
@@ -21,9 +19,10 @@ const GetQuiz = ({ route, navigation }) => {
 
     const props = route.params;
 
-    
-
     const [selectedOption, setSelectedOption] = useState(null);
+    const [answerList, setAnswers] = useState([]);
+    const [answerKey, updateKey] = useState([]);
+
 
     const handleOptionPress = (index) => {
         {
@@ -33,6 +32,46 @@ const GetQuiz = ({ route, navigation }) => {
         }
     };
 
+    const postSelectedAnswer = async (questionId, selectedAnswer) => {
+        try {
+            const response = await fetch('/api/answers', {
+                method: 'POST',
+                body: JSON.stringify({
+                    questionId,
+                    selectedAnswer,
+                }),
+            });
+
+            if (response.ok) {
+                // Success!
+                const data = await response.json();
+            } else {
+                // Handle the error response
+                console.error('Error:', response.statusText);
+            }
+        } catch (error) {
+            // Handle network errors or exceptions
+            console.error('Error:', error);
+        }
+    };
+
+    const getAnswers = async () => {
+        try {
+            const response = await fetch("/api/answers");
+            const data = await response.json()
+            const ansKey = await fetch("/api/questions");
+            const keys = await ansKey.json();
+            const updatedKey = Object.keys(keys).map((key) => {
+                const { id, question, options, answer, showImage, imageLink } =
+                    keys[key];
+                return { "id": id, "questionId": id, "answer": answer }
+            });
+            setAnswers(data);
+            updateKey(updatedKey);
+        } catch (e) {
+            console.error('Error: ', e);
+        }
+    };
 
     const RenderOptions = (props) => {
         return props.options.map((option, index) => (
@@ -93,9 +132,6 @@ const GetQuiz = ({ route, navigation }) => {
                         style={styles.confetti}
                     />
                 </View>
-                <View>
-                    {console.log(props.questionList)}
-                </View>
                 {props.questionList.length > 0 ? (
                     <View style={styles.question}>
                         <NumberCircle current={props.id} total={5} />
@@ -117,6 +153,7 @@ const GetQuiz = ({ route, navigation }) => {
                                 </View>
                                 {props.id !== 5 ? (
                                     <Pressable onPress={() => {
+                                        postSelectedAnswer(props.id, props.questionList[props.id - 1].options[selectedOption]);
                                         navigation.dispatch(
                                             StackActions.push("Quiz", { id: props.id + 1, questionList: props.questionList })
                                         );
@@ -127,7 +164,10 @@ const GetQuiz = ({ route, navigation }) => {
                                         </View>
                                     </Pressable>
                                 ) : (
-                                    <Pressable>
+                                    <Pressable onPress={() => {
+                                        postSelectedAnswer(props.id, props.questionList[props.id - 1].options[selectedOption])
+                                        getAnswers();
+                                    }}>
                                         <View style={styles.customButton}>
                                             <Text style={styles.buttonText}> Submit </Text>
                                             <MaterialIcons name="arrow-forward" size={24} color="#FFF" style={styles.buttonIcon} />

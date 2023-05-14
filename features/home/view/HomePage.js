@@ -3,22 +3,22 @@ import { useState, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StackActions } from '@react-navigation/native';
 
-import { sampleData } from '../../quiz/sampleData';
-import { Question
+// import { sampleData } from '../../quiz/sampleData';
+import { Question} from '../../quiz/model/question_model';
 
-} from '../../quiz/model/question_model';
+
+
 export default function HomePage({ navigation }) {
 
     const [questionList, setQuestionList] = useState([]);
 
-    const getQuestions = () => {
+    const getQuestions = async () => {
         try {
-            const data = sampleData;
-            // const data = await response.json();
+            const response = await fetch("/api/questions");
+            const data = await response.json();
             const updatedQuestions = Object.keys(data).map((key) => {
                 const { id, question, options, answer, showImage, imageLink } =
                     data[key];
-                // console.log(data[key]);
                 return new Question(
                     id,
                     question,
@@ -33,6 +33,8 @@ export default function HomePage({ navigation }) {
             console.error('Error:', error);
         }
     };
+
+
 
     useEffect(() => {
         getQuestions();
@@ -63,7 +65,7 @@ export default function HomePage({ navigation }) {
 
 const Start = (props) => {
     return (
-        props.questionList.length > 0 ? (
+        props.questionList.length > 1 ? (
             <Pressable onPress={() => {
                 props.navigation.dispatch(
                     StackActions.push("Quiz", { id: 1, questionList: props.questionList })
