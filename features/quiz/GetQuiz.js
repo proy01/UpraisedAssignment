@@ -127,6 +127,23 @@ const GetQuiz = ({ route, navigation }) => {
         );
     };
 
+    const calculateScore = async (answerKey, answerList) =>{
+
+        let correct = 0;
+        let wrong = 0;
+
+        for (let i = 0; i<answerKey.length; i++){
+            if (answerKey[i]["answer"] === answerList[i]["selectedAnswer"]){
+                correct++;
+            } else {
+                wrong++
+            }
+        };
+
+        return {correct, wrong};
+
+    };
+
 
     useEffect(() => {
         setStartTime(Date.now());
@@ -179,9 +196,11 @@ const GetQuiz = ({ route, navigation }) => {
                                 ) : (
                                     <Pressable onPress={async () => {
                                         await postSelectedAnswer(props.id, props.questionList[props.id - 1].options[selectedOption]);
-                                        const { answerKey, answerList } = await getAnswers();
-                                        console.log(answerKey);
-                                        console.log(answerList);
+                                        let { answerKey, answerList } = await getAnswers();
+                                        let {correct, wrong } = await calculateScore(answerKey, answerList);
+                                        navigation.dispatch(
+                                            StackActions.push("Score", { correct: correct, wrong: wrong})
+                                        );
                                       }}>
                                         <View style={styles.customButton}>
                                             <Text style={styles.buttonText}> Submit </Text>

@@ -108,5 +108,10 @@ export const MockServer = () => createServer({
             const answers = schema.db.answers;
             return answers;
         })
+        this.delete("/api/answers", (schema) => {
+            schema.db.answers.remove(); // Remove all answers from the database
+            return { message: "Answers cleared successfully" };
+          });
     },
+    
 });
