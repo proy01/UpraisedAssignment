@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -22,7 +22,9 @@ const GetQuiz = ({ route, navigation }) => {
     const [selectedOption, setSelectedOption] = useState(null);
     const [answerList, setAnswers] = useState([]);
     const [answerKey, updateKey] = useState([]);
-
+    const [startTime, setStartTime] = useState(null);
+    const [endTime, setEndTime] = useState(null);
+    const [elapsedTime, setElapsedTime] = useState(null);
 
     const handleOptionPress = (index) => {
         {
@@ -34,17 +36,20 @@ const GetQuiz = ({ route, navigation }) => {
 
     const postSelectedAnswer = async (questionId, selectedAnswer) => {
         try {
+            const elapsedTime = Math.max(0, Date.now() - startTime);
             const response = await fetch('/api/answers', {
                 method: 'POST',
                 body: JSON.stringify({
                     questionId,
                     selectedAnswer,
+                    elapsedTime,
                 }),
             });
 
             if (response.ok) {
                 // Success!
                 const data = await response.json();
+                return true;
             } else {
                 // Handle the error response
                 console.error('Error:', response.statusText);
@@ -68,6 +73,8 @@ const GetQuiz = ({ route, navigation }) => {
             });
             setAnswers(data);
             updateKey(updatedKey);
+            console.log(answerKey);
+            console.log(answerList);
         } catch (e) {
             console.error('Error: ', e);
         }
@@ -123,6 +130,17 @@ const GetQuiz = ({ route, navigation }) => {
         );
     };
 
+
+    useEffect(() => {
+        setStartTime(Date.now());
+
+        return () => {
+            setStartTime(null);
+            setEndTime(null);
+            setElapsedTime(null);
+        };
+    }, []);
+
     return (
         <View style={styles.background}>
             <ScrollView>
@@ -165,7 +183,7 @@ const GetQuiz = ({ route, navigation }) => {
                                     </Pressable>
                                 ) : (
                                     <Pressable onPress={() => {
-                                        postSelectedAnswer(props.id, props.questionList[props.id - 1].options[selectedOption])
+                                        postSelectedAnswer(props.id, props.questionList[props.id - 1].options[selectedOption]);
                                         getAnswers();
                                     }}>
                                         <View style={styles.customButton}>

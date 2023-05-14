@@ -6,6 +6,7 @@ export const MockServer = () => createServer({
         answer: Model.extend({
             questionId: '',
             slectedAnswer: '',
+            elpasedTime: '',
         })
     },
     routes() {
