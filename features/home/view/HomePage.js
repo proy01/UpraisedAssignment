@@ -3,15 +3,16 @@ import { useState, useEffect } from 'react';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StackActions } from '@react-navigation/native';
 
-// import { sampleData } from '../../quiz/sampleData';
-import { Question} from '../../quiz/model/question_model';
+import { Question } from '../../quiz/model/question_model';
 
 
 
 export default function HomePage({ navigation }) {
 
+    // State for all questions pulled by api. Defaults to empty array.
     const [questionList, setQuestionList] = useState([]);
 
+    // Function to fetch all questions from the api to update state of questionList.
     const getQuestions = async () => {
         try {
             const response = await fetch("/api/questions");
@@ -35,7 +36,7 @@ export default function HomePage({ navigation }) {
     };
 
 
-
+    // Binding for the first render to get questions. 
     useEffect(() => {
         getQuestions();
     }, []);
@@ -63,6 +64,7 @@ export default function HomePage({ navigation }) {
 
 };
 
+// The start button to start the quiz.
 const Start = (props) => {
     return (
         props.questionList.length > 1 ? (

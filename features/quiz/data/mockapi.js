@@ -3,6 +3,7 @@ import { createServer, Model } from "miragejs"
 
 export const MockServer = () => createServer({
     models: {
+        // This model maintains the object structure for when it has to receive a post request.
         answer: Model.extend({
             questionId: '',
             slectedAnswer: '',
@@ -11,6 +12,17 @@ export const MockServer = () => createServer({
     },
     routes() {
         this.get("/api/questions", () => {
+            /*
+            A quiz set on music.
+            Here is a description of the api:
+                The /api/questions endpoint holds the following info:
+                questionId, 
+                question text, 
+                options available for the question, 
+                answer for the question, 
+                if the image needs to be shown or not,
+                and the link for the image.
+            */
             return {
                 "1": {
                     id: 1,
@@ -18,7 +30,7 @@ export const MockServer = () => createServer({
                         "Which artist released the hit single 'Shape of You'?",
                     options: [
                         'Justin Bieber',
-                        'Bruno Mars', 
+                        'Bruno Mars',
                         'Ed Sheeran',
                         'Taylor Swift',
                         'Adele',
@@ -100,15 +112,26 @@ export const MockServer = () => createServer({
             }
         })
         this.post("/api/answers", (schema, request) => {
+            /*
+            This post endpoint /api/answers takes in the object and stores it for scoring later. 
+            It also holds the elapsed amount of time for each question answered should that data be required later.
+            It however does not hold information for multiple attempts. 
+            */
             const attrs = JSON.parse(request.requestBody);
             const answer = schema.answers.create(attrs);
             return answer;
         })
         this.get("/api/answers", (schema) => {
+            /*
+            This is the get for the answers endpoint to access all the answers for later scoring purposes.
+            */
             const answers = schema.db.answers;
             return answers;
         })
         this.delete("/api/answers", (schema) => {
+            /*
+            Cleans the /api/answers enpoint so that when re-taking the quiz, the old stores do not impact the results at the end.
+            */
             schema.db.answers.remove(); // Remove all answers from the database
             return { message: "Answers cleared successfully" };
         });

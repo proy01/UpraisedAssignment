@@ -1,7 +1,6 @@
 import 'react-native-gesture-handler';
-import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
-import { NavigationContainer, StackActions } from '@react-navigation/native';
-import React, { useState, useEffect } from 'react';
+import { StyleSheet, SafeAreaView } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import HomePage from './features/home/view/HomePage';
@@ -13,6 +12,7 @@ import GetScore from './features/score/view/getScore';
 MockServer();
 
 export default function App() {
+  // This is the stack that manages navigation and allows for StackActions to take place throughout the app.
   const Stack = createNativeStackNavigator();
 
   return (

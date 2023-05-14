@@ -17,13 +17,17 @@ import { StackActions } from '@react-navigation/native';
 
 const GetQuiz = ({ route, navigation }) => {
 
+    // The params it takes is the id for the page and the list of questions to get the question for this page from.
     const props = route.params;
 
+    // many useState hooks for state managment. These variable are passed through the tree 
+    // for calculating score and maintaining overall data throughtout the cycle.
     const [selectedOption, setSelectedOption] = useState(null);
     const [answerList, setAnswers] = useState([]);
     const [answerKey, updateKey] = useState([]);
     const [startTime, setStartTime] = useState(null);
 
+    // Selects the option from list provided
     const handleOptionPress = (index) => {
         {
             selectedOption !== index
@@ -32,6 +36,7 @@ const GetQuiz = ({ route, navigation }) => {
         }
     };
 
+    // Sends a request to the api to store the answer from the current quiz page
     const postSelectedAnswer = async (questionId, selectedAnswer) => {
         try {
             const elapsedTime = Math.max(0, Date.now() - startTime);
@@ -58,6 +63,7 @@ const GetQuiz = ({ route, navigation }) => {
         }
     };
 
+    // If last page, this calls all the saved answers to check for score calculation
     const getAnswers = async () => {
         try {
             const response = await fetch("/api/answers");
@@ -77,6 +83,7 @@ const GetQuiz = ({ route, navigation }) => {
         }
     };
 
+    // A component that only deals with listing clickable components
     const RenderOptions = (props) => {
         return props.options.map((option, index) => (
             <TouchableOpacity
@@ -104,6 +111,7 @@ const GetQuiz = ({ route, navigation }) => {
         ));
     };
 
+    // This component shows how many questions are done.
     const NumberCircle = (props) => {
         return (
             <View style={styles.circle}>
@@ -127,24 +135,26 @@ const GetQuiz = ({ route, navigation }) => {
         );
     };
 
-    const calculateScore = async (answerKey, answerList) =>{
+    // This function calculates the final scores.
+    const calculateScore = async (answerKey, answerList) => {
 
         let correct = 0;
         let wrong = 0;
 
-        for (let i = 0; i<answerKey.length; i++){
-            if (answerKey[i]["answer"] === answerList[i]["selectedAnswer"]){
+        for (let i = 0; i < answerKey.length; i++) {
+            if (answerKey[i]["answer"] === answerList[i]["selectedAnswer"]) {
                 correct++;
             } else {
                 wrong++
             }
         };
 
-        return {correct, wrong};
+        return { correct, wrong };
 
     };
 
 
+    // Binds the start time to the first render allowing us to measure elapsed time.
     useEffect(() => {
         setStartTime(Date.now());
 
@@ -187,8 +197,8 @@ const GetQuiz = ({ route, navigation }) => {
                                         navigation.dispatch(
                                             StackActions.replace("Quiz", { id: props.id + 1, questionList: props.questionList })
                                         );
-                                    }}>
-                                        <View style={styles.customButton}>
+                                    }} disabled={selectedOption === null}>
+                                        <View style={selectedOption !== null ? styles.customButton : styles.customButtonDisabled}>
                                             <Text style={styles.buttonText}> Next </Text>
                                             <MaterialIcons name="arrow-forward" size={24} color="#FFF" style={styles.buttonIcon} />
                                         </View>
@@ -197,12 +207,11 @@ const GetQuiz = ({ route, navigation }) => {
                                     <Pressable onPress={async () => {
                                         await postSelectedAnswer(props.id, props.questionList[props.id - 1].options[selectedOption]);
                                         let { answerKey, answerList } = await getAnswers();
-                                        let {correct, wrong } = await calculateScore(answerKey, answerList);
+                                        let { correct, wrong } = await calculateScore(answerKey, answerList);
                                         navigation.dispatch(
-                                            StackActions.push("Score", { correct: correct, wrong: wrong})
-                                        );
-                                      }}>
-                                        <View style={styles.customButton}>
+                                            StackActions.push("Score", { correct: correct, wrong: wrong }));
+                                    }} disabled={selectedOption === null}>
+                                        <View style={selectedOption !== null ? styles.customButton : styles.customButtonDisabled}>
                                             <Text style={styles.buttonText}> Submit </Text>
                                             <MaterialIcons name="arrow-forward" size={24} color="#FFF" style={styles.buttonIcon} />
                                         </View>
@@ -217,11 +226,12 @@ const GetQuiz = ({ route, navigation }) => {
                                 {props.id !== 5 ? (
                                     <Pressable onPress={async () => {
                                         await postSelectedAnswer(props.id, props.questionList[props.id - 1].options[selectedOption]);
+                                        console.log(selectedOption);
                                         navigation.dispatch(
                                             StackActions.push("Quiz", { id: props.id + 1, questionList: props.questionList })
                                         );
-                                    }}>
-                                        <View style={styles.customButton}>
+                                    }} disabled={selectedOption === null}>
+                                        <View style={selectedOption !== null ? styles.customButton : styles.customButtonDisabled}>
                                             <Text style={styles.buttonText}> Next </Text>
                                             <MaterialIcons name="arrow-forward" size={24} color="#FFF" style={styles.buttonIcon} />
                                         </View>
@@ -230,12 +240,12 @@ const GetQuiz = ({ route, navigation }) => {
                                     <Pressable onPress={async () => {
                                         await postSelectedAnswer(props.id, props.questionList[props.id - 1].options[selectedOption]);
                                         let { answerKey, answerList } = await getAnswers();
-                                        let {correct, wrong } = await calculateScore(answerKey, answerList);
+                                        let { correct, wrong } = await calculateScore(answerKey, answerList);
                                         navigation.dispatch(
-                                            StackActions.push("Score", { correct: correct, wrong: wrong})
+                                            StackActions.push("Score", { correct: correct, wrong: wrong })
                                         );
-                                      }}>
-                                        <View style={styles.customButton}>
+                                    }} disabled={selectedOption === null}>
+                                        <View style={selectedOption !== null ? styles.customButton : styles.customButtonDisabled}>
                                             <Text style={styles.buttonText}> Submit </Text>
                                             <MaterialIcons name="arrow-forward" size={24} color="#FFF" style={styles.buttonIcon} />
                                         </View>
@@ -250,9 +260,10 @@ const GetQuiz = ({ route, navigation }) => {
                         autoPlay
                         loop
                     />
-                )}
-            </ScrollView>
-        </View>
+                )
+                }
+            </ScrollView >
+        </View >
     );
 }
 
@@ -298,6 +309,17 @@ const styles = StyleSheet.create({
         marginVertical: 30,
         flexDirection: 'row',
         justifyContent: 'center',
+    },
+    customButtonDisabled: {
+        backgroundColor: '#FF3B3F',
+        borderRadius: 100,
+        width: Dimensions.get('window').width * 0.8,
+        height: 50,
+        alignSelf: 'center',
+        marginVertical: 30,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        opacity: 0.15,
     },
     buttonText: {
         color: 'white',

@@ -10,13 +10,15 @@ import {
     Pressable,
 } from 'react-native';
 import * as Progress from 'react-native-progress';
-import { MockServer } from '../../quiz/data/mockapi';
 
+// Final Score Page
 const GetScore = ({ route, navigation }) => {
+    // Takes the number of correct and wrong responses.
     const props = route.params;
 
     console.log(props);
 
+    // This is the component that shows how may correct answers you had.
     const CorrectTab = (props) => {
         return (
             <View style={styles.corrects}>
@@ -28,6 +30,7 @@ const GetScore = ({ route, navigation }) => {
         );
     };
 
+    // This is the compoennt that shows how many wrong answers you had.
     const WrongTab = (props) => {
         return (
             <View style={styles.wrongs}>
@@ -53,6 +56,9 @@ const GetScore = ({ route, navigation }) => {
                         <Text style={styles.mainQuestionText}>Your Score</Text>
                     </View>
                     <View>
+                        {/* The progress circle has been used in place of the design given in the figma file as I currently do not have 
+                        the skills to build my components that have a moving unit based on inputs. This is still a good representation 
+                        of the score and it is also a fast implementation. */}
                         <Progress.Circle
                             size={120}
                             progress={(props.correct / (props.correct + props.wrong))}
@@ -64,23 +70,23 @@ const GetScore = ({ route, navigation }) => {
                             showsText
                             strokeCap="round"
                             formatText={() => (
-                                <Text style={{fontWeight: 'bold'}}>{(props.correct / (props.correct + props.wrong)) * 100}%</Text>
+                                <Text style={{ fontWeight: 'bold' }}>{(props.correct / (props.correct + props.wrong)) * 100}%</Text>
                             )}
                         />
                         <CorrectTab correct={props.correct} />
                         <WrongTab wrong={props.wrong} />
                     </View>
-                    <Pressable onPress={async ()=>{
+                    <Pressable onPress={async () => {
                         await fetch("/api/answers", {
                             method: "DELETE",
-                          });
+                        });
                         navigation.dispatch(
                             StackActions.replace("Home")
                         );
                     }}>
-                    <View style={styles.customButton}>
-                        <Text style={styles.buttonText}> Start Again </Text>
-                    </View>
+                        <View style={styles.customButton}>
+                            <Text style={styles.buttonText}> Start Again </Text>
+                        </View>
                     </Pressable>
                 </View>
             </ScrollView>
